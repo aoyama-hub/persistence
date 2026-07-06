@@ -1,0 +1,107 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="About | persistence" description="Professional portfolio profile and credentials.">
+	<section class="about-view">
+		<header class="about-header">
+			<span>Portfolio Context</span>
+			<h1>About Me</h1>
+		</header>
+		
+		<div class="about-content">
+			<p>
+				Hello! I am a software engineer and researcher focused on structural architecture, optimization mechanics, and clean technical workflows. I build and document systems that balance mathematical performance with extreme ease-of-use.
+			</p>
+			
+			<p>
+				This digital garden serves as a registry for notebook evaluations and design system implementations, keeping information clean, minimal, and instantly scannable.
+			</p>
+
+			<hr class="section-divider" />
+
+			<h2 class="sub-heading">Professional Connections</h2>
+			<ul class="connections-list">
+				<li>
+					<strong>GitHub</strong> 
+					<a href="https://github.com/aoyama-hub" target="_blank" rel="noopener noreferrer">@aoyama-hub</a>
+				</li>
+				<li>
+					<strong>LinkedIn</strong> 
+					<a href="#" target="_blank" rel="noopener noreferrer">Kazuki Aoyama</a>
+				</li>
+				<li>
+					<strong>Email Inquiry</strong> 
+					<a href="mailto:contact@domain.com">contact@domain.com</a>
+				</li>
+			</ul>
+		</div>
+	</section>
+</Layout>
+
+<style>
+	.about-view {
+		max-width: 65ch; /* Comfortable, non-scrolling reading measure */
+		margin: 0 auto;
+	}
+	.about-header {
+		margin-bottom: 2.5rem;
+	}
+	.about-header span {
+		font-family: var(--font-sans);
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		color: var(--accent);
+		font-weight: 700;
+	}
+	h1 {
+		font-size: 2.75rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		margin: 0.5rem 0 0 0;
+	}
+	.about-content p {
+		font-size: 1.15rem;
+		line-height: 1.8;
+		color: var(--text);
+		margin-bottom: 1.5rem;
+	}
+	.section-divider {
+		border: 0;
+		border-top: 1px solid var(--border);
+		margin: 2.5rem 0;
+	}
+	.sub-heading {
+		font-family: var(--font-sans);
+		font-size: 1.1rem;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: var(--muted);
+		margin-bottom: 1.5rem;
+	}
+	.connections-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+	.connections-list li {
+		font-family: var(--font-sans);
+		font-size: 1rem;
+		margin-bottom: 1rem;
+		display: flex;
+		justify-content: space-between;
+		border-bottom: 1px dashed var(--border);
+		padding-bottom: 0.5rem;
+	}
+	.connections-list strong {
+		color: var(--text);
+	}
+	.connections-list a {
+		text-decoration: none;
+		font-weight: 500;
+	}
+	.connections-list a:hover {
+		text-decoration: underline;
+	}
+</style>

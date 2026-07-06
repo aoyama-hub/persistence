@@ -5,78 +5,352 @@ import Layout from '../layouts/Layout.astro';
 const posts = (await getCollection('blog')).sort(
 	(a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+
+// Dynamically extract all unique tags used across your collection
+const allTags = [...new Set(posts.flatMap(post => post.data.tags || []))].sort();
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<Layout title="persistence | Personal Site">
-	<!-- About Me Section / Professional Introduction -->
-	<section class="about-me">
-		<h2>About Me</h2>
-		<p>
-			Welcome. I am a systems optimization and data architecture specialist. This blog serves as a chronological, distraction-free register of structural paradigms, notebook conversions, and technical insights.
-		</p>
-	</section>
+<Layout title="persistence | Dashboard">
+	<div class="dashboard-grid">
+		<!-- Left Sidebar Column: Search & Filters -->
+		<aside class="dashboard-sidebar">
+			<div class="sidebar-block">
+				<label for="search-input" class="sidebar-label">Search Library</label>
+				<input 
+					type="search" 
+					id="search-input" 
+					placeholder="Type keywords..." 
+					aria-label="Search posts"
+				/>
+			</div>
 
-	<hr class="divider" />
+			<div class="sidebar-block">
+				<span class="sidebar-label">Filter by Tag</span>
+				<div class="tag-cloud">
+					{allTags.map(tag => (
+						<button class="tag-filter-btn" data-tag={tag}>
+							#{tag}
+						</button>
+					))}
+				</div>
+			</div>
+			
+			<div id="filter-status" class="filter-status-box hidden">
+				<span>Active Filter</span>
+				<button id="clear-filters-btn">Clear Filter</button>
+			</div>
+		</aside>
 
-	<!-- Writing Log -->
-	<section class="writings">
-		<h2 class="section-title">Writing</h2>
-		<ul class="post-list">
-			{posts.map(post => (
-				<li>
-					<span class="date">
-						{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-					</span>
-					<a class="post-link" href={`${base}/posts/${post.slug}/`}>{post.data.title}</a>
-					{post.data.description && <p class="desc">{post.data.description}</p>}
-				</li>
-			))}
-		</ul>
-	</section>
+		<!-- Right Column: Chronological Dynamic Registry -->
+		<section class="dashboard-content">
+			<h2 class="content-header" id="list-title">Recent Entries</h2>
+			<ul class="dynamic-post-list" id="post-list">
+				{posts.map((post, index) => {
+					// We tag raw data strings on the element so JS can scan it instantly
+					const postTagsString = (post.data.tags || []).join(',').toLowerCase();
+					const postTitle = post.data.title.toLowerCase();
+					const postDesc = (post.data.description || '').toLowerCase();
+					
+					// Default visible: Only the top 3 posts on start
+					const isDefaultRecent = index < 3;
+					
+					return (
+						<li 
+							class={`post-card ${isDefaultRecent ? 'visible' : 'hidden'}`}
+							data-tags={postTagsString}
+							data-search-corpus={`${postTitle} ${postDesc}`}
+							data-default-recent={isDefaultRecent ? "true" : "false"}
+						>
+							<span class="date">
+								{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+							</span>
+							<a class="post-link" href={`${base}/posts/${post.slug}/`}>{post.data.title}</a>
+							{post.data.description && <p class="desc">{post.data.description}</p>}
+							{post.data.tags && post.data.tags.length > 0 && (
+								<div class="card-tags">
+									{post.data.tags.map(t => <span class="mini-tag">#{t}</span>)}
+								</div>
+							)}
+						</li>
+					);
+				})}
+			</ul>
+			<!-- Empty State Warning if no query hits -->
+			<p id="no-results" class="no-results-msg hidden">No entries match your filtering parameters.</p>
+		</section>
+	</div>
 </Layout>
 
-<style>
-	.about-me {
-		margin-top: 1rem;
+<script>
+	// Interactive Client-Side Search & Tag Engine
+	const searchInput = document.getElementById('search-input') as HTMLInputElement;
+	const tagButtons = document.querySelectorAll('.tag-filter-btn');
+	const clearFiltersBtn = document.getElementById('clear-filters-btn');
+	const filterStatus = document.getElementById('filter-status');
+	const listTitle = document.getElementById('list-title');
+	const noResultsMsg = document.getElementById('no-results');
+	const postCards = document.querySelectorAll('.post-card');
+
+	let activeTag: string | null = null;
+	let searchQuery = "";
+
+	function updateFilterUI() {
+		let visibleCount = 0;
+		const isFiltering = activeTag !== null || searchQuery.trim() !== "";
+
+		// Show/Hide active filter box status
+		if (isFiltering) {
+			filterStatus?.classList.remove('hidden');
+			if (listTitle) listTitle.textContent = "Search Results";
+		} else {
+			filterStatus?.classList.add('hidden');
+			if (listTitle) listTitle.textContent = "Recent Entries";
+		}
+
+		postCards.forEach(card => {
+			const element = card as HTMLElement;
+			const cardSearchText = element.getAttribute('data-search-corpus') || '';
+			const cardTags = (element.getAttribute('data-tags') || '').split(',');
+			const isDefaultRecent = element.getAttribute('data-default-recent') === 'true';
+
+			let matchesSearch = true;
+			let matchesTag = true;
+
+			// Check search match
+			if (searchQuery.trim() !== "") {
+				matchesSearch = cardSearchText.includes(searchQuery.toLowerCase());
+			}
+
+			// Check tag match
+			if (activeTag !== null) {
+				matchesTag = cardTags.includes(activeTag.toLowerCase());
+			}
+
+			// Core logic for dynamic scroll prevention:
+			// If not actively searching/filtering, only show the 3 default recent posts.
+			// If searching/filtering, evaluate match parameters globally across the entire archive.
+			if (isFiltering) {
+				if (matchesSearch && matchesTag) {
+					element.classList.remove('hidden');
+					element.classList.add('visible');
+					visibleCount++;
+				} else {
+					element.classList.remove('visible');
+					element.classList.add('hidden');
+				}
+			} else {
+				if (isDefaultRecent) {
+					element.classList.remove('hidden');
+					element.classList.add('visible');
+					visibleCount++;
+				} else {
+					element.classList.remove('visible');
+					element.classList.add('hidden');
+				}
+			}
+		});
+
+		// Dynamic empty state handler
+		if (visibleCount === 0) {
+			noResultsMsg?.classList.remove('hidden');
+		} else {
+			noResultsMsg?.classList.add('hidden');
+		}
 	}
-	.about-me h2 {
+
+	// Search Box typing trigger
+	searchInput?.addEventListener('input', (e) => {
+		searchQuery = (e.target as HTMLInputElement).value;
+		updateFilterUI();
+	});
+
+	// Tag button click listeners
+	tagButtons.forEach(btn => {
+		btn.addEventListener('click', () => {
+			const clickedTag = btn.getAttribute('data-tag');
+			
+			// Toggle Tag Select
+			if (activeTag === clickedTag) {
+				activeTag = null;
+				btn.classList.remove('active');
+			} else {
+				tagButtons.forEach(b => b.classList.remove('active'));
+				activeTag = clickedTag;
+				btn.classList.add('active');
+			}
+			updateFilterUI();
+		});
+	});
+
+	// Clear all input actions
+	function clearAll() {
+		activeTag = null;
+		searchQuery = "";
+		if (searchInput) searchInput.value = "";
+		tagButtons.forEach(b => b.classList.remove('active'));
+		updateFilterUI();
+	}
+
+	clearFiltersBtn?.addEventListener('click', clearAll);
+</script>
+
+<style>
+	/* Grid structure that scales beautifully and forces no-scroll constraints */
+	.dashboard-grid {
+		display: grid;
+		grid-template-columns: 280px 1fr;
+		gap: 3.5rem;
+		align-items: start;
+	}
+
+	@media (max-width: 768px) {
+		.dashboard-grid {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+		}
+	}
+
+	/* Sidebar Controls Style */
+	.dashboard-sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: 2.25rem;
+	}
+
+	.sidebar-block {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.sidebar-label {
+		font-family: var(--font-sans);
+		font-size: 0.8rem;
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+		font-weight: 700;
+		color: var(--muted);
+	}
+
+	/* Search Input Field */
+	#search-input {
+		width: 100%;
+		padding: 0.8rem 1rem;
+		border-radius: 8px;
+		background-color: var(--code-bg);
+		border: 1px solid var(--border);
+		color: var(--text);
+		font-family: var(--font-sans);
+		font-size: 0.95rem;
+		transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	}
+
+	#search-input:focus {
+		outline: none;
+		border-color: var(--accent);
+		box-shadow: 0 0 0 3px rgba(35, 92, 74, 0.15);
+	}
+
+	/* Tag Cloud Elements */
+	.tag-cloud {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.tag-filter-btn {
 		font-family: var(--font-sans);
 		font-size: 0.85rem;
-		text-transform: uppercase;
-		letter-spacing: 0.12em;
+		font-weight: 500;
+		padding: 0.4rem 0.8rem;
+		border-radius: 6px;
+		background-color: var(--code-bg);
+		border: 1px solid var(--border);
+		color: var(--text);
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.tag-filter-btn:hover {
+		border-color: var(--accent);
 		color: var(--accent);
-		margin: 0 0 1rem 0;
+	}
+
+	.tag-filter-btn.active {
+		background-color: var(--accent);
+		color: #ffffff;
+		border-color: var(--accent);
+	}
+
+	/* Active filter state indicator */
+	.filter-status-box {
+		background-color: var(--code-bg);
+		border: 1px dashed var(--accent);
+		padding: 1rem;
+		border-radius: 8px;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.filter-status-box span {
+		font-family: var(--font-sans);
+		font-size: 0.8rem;
+		font-weight: 600;
+		color: var(--accent);
+	}
+
+	#clear-filters-btn {
+		background: none;
+		border: none;
+		color: var(--text);
+		text-align: left;
+		padding: 0;
+		font-family: var(--font-sans);
+		font-size: 0.9rem;
 		font-weight: 700;
+		cursor: pointer;
+		text-decoration: underline;
 	}
-	.about-me p {
-		font-size: 1.2rem;
-		line-height: 1.7;
-		margin: 0;
+
+	/* Dynamic Post Cards Style */
+	.dashboard-content {
+		display: flex;
+		flex-direction: column;
+		gap: 1.5rem;
 	}
-	.divider {
-		border: 0;
-		border-top: 1px solid var(--muted);
-		opacity: 0.15;
-		margin: 3rem 0;
-	}
-	.section-title {
+
+	.content-header {
 		font-family: var(--font-sans);
 		font-size: 0.85rem;
 		text-transform: uppercase;
 		letter-spacing: 0.12em;
 		color: var(--muted);
-		margin: 0 0 2rem 0;
+		margin: 0 0 1rem 0;
 		font-weight: 700;
+		border-bottom: 1px solid var(--border);
+		padding-bottom: 0.5rem;
 	}
-	.post-list {
+
+	.dynamic-post-list {
 		list-style: none;
 		padding: 0;
 		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 2.5rem;
 	}
-	.post-list li {
-		margin-bottom: 2.5rem;
+
+	/* Hide/Show classes modified strictly via JS engine */
+	.post-card.hidden {
+		display: none !important;
 	}
+
+	.post-card.visible {
+		display: block;
+	}
+
 	.date {
 		display: block;
 		font-family: var(--font-sans);
@@ -84,20 +358,50 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		color: var(--muted);
 		margin-bottom: 0.25rem;
 	}
+
 	.post-link {
-		font-size: 1.4rem;
-		font-weight: 600;
+		font-size: 1.45rem;
+		font-weight: 700;
 		text-decoration: none;
 		color: var(--text);
 		transition: color 0.15s ease;
+		letter-spacing: -0.01em;
 	}
+
 	.post-link:hover {
 		color: var(--accent);
 		text-decoration: underline;
 	}
+
 	.desc {
-		margin: 0.4rem 0 0 0;
+		margin: 0.4rem 0 0.75rem 0;
 		color: var(--muted);
-		font-size: 1rem;
+		font-size: 1.05rem;
+		line-height: 1.6;
+	}
+
+	/* Mini tags rendered at the foot of cards */
+	.card-tags {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.mini-tag {
+		font-family: var(--font-sans);
+		font-size: 0.75rem;
+		color: var(--accent);
+		background-color: var(--code-bg);
+		padding: 0.15rem 0.4rem;
+		border-radius: 4px;
+	}
+
+	.no-results-msg {
+		font-size: 1.1rem;
+		color: var(--muted);
+		font-style: italic;
+	}
+
+	.hidden {
+		display: none !important;
 	}
 </style>

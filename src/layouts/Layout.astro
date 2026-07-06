@@ -15,19 +15,22 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		<meta name="description" content={description} />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href={`${base}/favicon.svg`} />
-		<!-- Load Google Fonts asynchronously for optimal PageSpeed -->
+		<!-- High-performance fonts configuration -->
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
 		<title>{title}</title>
 	</head>
 	<body>
-		<header>
-			<nav>
+		<header class="global-header">
+			<nav class="nav-bar">
 				<a href={`${base}/`} class="site-title">persistence</a>
+				<div class="nav-links">
+					<a href={`${base}/about/`} class="nav-item">About</a>
+				</div>
 			</nav>
 		</header>
-		<main>
+		<main class="global-main">
 			<slot />
 		</main>
 	</body>
@@ -35,40 +38,60 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 <style is:global>
 	:root {
-		--bg: #f5f8f6;          /* Calm pastel sage/cream background */
-		--text: #1b2e29;        /* High-contrast deep dark forest green */
-		--muted: #4e6b62;       /* Mid-tone slate green for meta text */
-		--accent: #337a63;      /* Muted green accent for links */
-		--code-bg: #e2ebe7;     /* Soft sage container for inline code and syntax borders */
-		--line-height: 1.8;
+		--bg: #ecf3ee;          /* Soft, warmer organic pastel green */
+		--text: #172824;        /* Dark forest charcoal for comfortable contrast */
+		--muted: #4d665f;       /* Deep warm slate green for subheadings */
+		--accent: #235c4a;      /* Forest-accent green for highly readable active links */
+		--border: #d4e0d9;      /* Delicate border alignment green */
+		--code-bg: #dde6e1;     /* Contrast offset container for code/inputs */
 		--font-serif: 'Lora', Georgia, serif;
 		--font-sans: 'Plus Jakarta Sans', sans-serif;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		:root {
+			--bg: #121a18;      /* Deep low-light jungle slate */
+			--text: #e1ede8;    /* Comfortable cream text */
+			--muted: #8da39d;
+			--accent: #5abfa0;  /* Bright mint accent */
+			--border: #243531;
+			--code-bg: #1b2623;
+		}
+	}
+
+	* {
+		box-sizing: border-box;
 	}
 
 	body {
 		background-color: var(--bg);
 		color: var(--text);
-		font-family: var(--font-serif); /* Focus on beautiful, slow-paced reading */
-		line-height: var(--line-height);
+		font-family: var(--font-serif);
+		line-height: 1.75;
 		margin: 0;
 		padding: 0;
+		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 	}
 
-	header, main {
+	.global-header {
 		width: 100%;
-		max-width: 68ch; /* Mathematically golden line measure (65-75 chars) */
-		padding: 2.5rem 1.5rem;
+		max-width: 1000px;
+		padding: 2rem 1.5rem 0 1.5rem;
 		box-sizing: border-box;
 	}
 
-	header {
-		padding-bottom: 0;
+	.nav-bar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--border);
 	}
 
-	nav a {
+	.site-title {
 		text-decoration: none;
 		color: var(--text);
 		font-family: var(--font-sans);
@@ -77,48 +100,61 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		letter-spacing: -0.02em;
 	}
 
-	h1, h2, h3, h4 {
-		font-family: var(--font-serif);
-		color: var(--text);
-		line-height: 1.25;
-		margin-top: 2.5rem;
-		font-weight: 600;
+	.nav-links {
+		display: flex;
+		gap: 1.5rem;
 	}
 
-	a {
+	.nav-item {
+		text-decoration: none;
+		color: var(--muted);
+		font-family: var(--font-sans);
+		font-size: 0.95rem;
+		font-weight: 500;
+		transition: color 0.15s ease;
+	}
+
+	.nav-item:hover {
 		color: var(--accent);
-		text-underline-offset: 3px;
 	}
 
+	.global-main {
+		width: 100%;
+		max-width: 1000px;
+		padding: 2.5rem 1.5rem;
+		box-sizing: border-box;
+		flex-grow: 1;
+	}
+
+	/* Beautiful responsive images for notebooks */
+	img {
+		max-width: 100%;
+		height: auto;
+		border-radius: 8px;
+		border: 1px solid var(--border);
+		margin: 1.5rem 0;
+	}
+
+	/* Shiki syntax code highlighting container */
 	pre {
-		background-color: #1a2622 !important; /* Low-glare dark-slate container */
+		background-color: #121a18 !important; /* Low-fatigue slate */
 		padding: 1.25rem;
 		border-radius: 8px;
 		overflow-x: auto;
 		font-size: 0.9rem;
-		border: 1px solid #d0ded8;
-		box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+		border: 1px solid var(--border);
+		box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
 	}
 
 	code {
-		font-family: ui-monospace, SFMono-Regular, "SF Pro Mono", Menlo, Monaco, Consolas, monospace;
+		font-family: ui-monospace, SFMono-Regular, "SF Pro Mono", Monaco, Consolas, monospace;
 	}
 
-	/* Clean support for inline code tags */
 	:not(pre) > code {
 		background-color: var(--code-bg);
 		padding: 0.2rem 0.4rem;
 		border-radius: 4px;
 		font-size: 0.9em;
-		color: #213f35;
-	}
-
-	/* Responsive images configuration for Jupyter assets */
-	img {
-		max-width: 100%;
-		height: auto;
-		border-radius: 6px;
-		border: 1px solid var(--code-bg);
-		margin: 1.5rem 0;
+		color: var(--accent);
 	}
 </style>
