@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<Layout title="About | persistence" description="Professional portfolio profile and credentials.">
+<Layout title="About | persistence" description="Professional accountability journal, profile, and personal growth principles.">
 	<section class="about-view">
 		<!-- Left: Text Column -->
 		<div class="about-text-column">
@@ -14,12 +14,31 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 			
 			<div class="about-content">
 				<p>
-					Hello! I am Kazuki Aoyama, a software engineer and researcher focused on structural architecture, optimization mechanics, and clean technical workflows. I build and document systems that balance mathematical performance with extreme ease-of-use.
+					I am Kazuki Aoyama, and this is my accountability journal. My goal in life is to improve 1% every single day. Here is where I document the why and how of my growth, and maybe you can pick something up along the way.
 				</p>
 				
-				<p>
-					This digital garden serves as a registry for notebook evaluations and design system implementations, keeping information clean, minimal, and instantly scannable.
+				<p class="principles-intro">
+					The principles I will employ when creating posts are the following:
 				</p>
+
+				<ol class="principles-list">
+					<li>
+						<strong>High-Fidelity Data & Code:</strong> 
+						Every code snippet must compile, calculations must resolve, and claims must hold mathematical weight. No hand-waving, generalizations, or shortcuts.
+					</li>
+					<li>
+						<strong>Uncompromising Honesty:</strong> 
+						Like Marcus Aurelius’s <em>Meditations</em>, these notes are written to my own mind first. Performative complexity is stripped out—only raw, unvarnished truth.
+					</li>
+					<li>
+						<strong>Feynman-Style Teaching:</strong> 
+						Teaching is my ultimate mental exercise. If I cannot explain a high-dimensional concept or system optimization pattern in clear, minimal terms, I do not truly understand it.
+					</li>
+					<li>
+						<strong>Systematic Inversion:</strong> 
+						Inspired by Charlie Munger, I will document not just how ideas succeed, but how they break. "Invert, always invert" to avoid intellectual mistakes and prevent system degradation.
+					</li>
+				</ol>
 
 				<hr class="section-divider" />
 
@@ -58,19 +77,21 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 	/* Split Grid Alignment */
 	.about-view {
 		display: grid;
-		grid-template-columns: 1.2fr 0.8fr;
+		grid-template-columns: 1.25fr 0.75fr;
 		gap: 4.5rem;
-		align-items: center;
+		align-items: start;
 		width: 100%;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: 900px) {
 		.about-view {
 			grid-template-columns: 1fr;
 			gap: 2.5rem;
 		}
 		.about-image-column {
-			order: -1; /* Pushes the image to the top of the stack on mobile */
+			order: -1; /* Pulls profile picture to top on mobile views */
+			max-width: 320px;
+			margin: 0 auto;
 		}
 	}
 
@@ -98,10 +119,38 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		color: var(--text);
 		margin-bottom: 1.5rem;
 	}
+
+	/* Clean, professional principles list styling */
+	.principles-intro {
+		font-weight: 600;
+		color: var(--text);
+		margin-top: 2rem;
+	}
+	.principles-list {
+		padding-left: 1.25rem;
+		margin: 0 0 2.5rem 0;
+	}
+	.principles-list li {
+		font-size: 1.05rem;
+		line-height: 1.75;
+		color: var(--text);
+		margin-bottom: 1.25rem;
+		padding-left: 0.5rem;
+	}
+	.principles-list strong {
+		color: var(--accent);
+		display: inline;
+		font-family: var(--font-sans);
+		font-size: 0.95rem;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
+		margin-right: 0.25rem;
+	}
+
 	.section-divider {
 		border: 0;
 		border-top: 1px solid var(--border);
-		margin: 2rem 0;
+		margin: 2.5rem 0;
 	}
 	.sub-heading {
 		font-family: var(--font-sans);
@@ -110,6 +159,7 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		letter-spacing: 0.05em;
 		color: var(--muted);
 		margin-bottom: 1.25rem;
+		font-weight: 700;
 	}
 	.connections-list {
 		list-style: none;
@@ -136,23 +186,25 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		text-decoration: underline;
 	}
 
-	/* Image Styling Layout */
+	/* Image Framing and Floating Sticky Mechanics */
 	.profile-frame {
 		border-radius: 16px;
 		border: 1px solid var(--border);
 		box-shadow: 0 12px 36px rgba(23, 40, 36, 0.08);
 		overflow: hidden;
 		width: 100%;
-		aspect-ratio: 4 / 5; /* Beautiful vertical photo ratio */
+		aspect-ratio: 4 / 5;
 		background-color: var(--code-bg);
+		position: sticky;
+		top: 2rem; /* Keep image floating in frame as readers navigate your rules */
 	}
 
 	.profile-image {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-		margin: 0 !important; /* Overwrite global responsive image spacing margin */
-		border-radius: 0 !important; /* Overwrite global border rules */
+		margin: 0 !important;
+		border-radius: 0 !important;
 		border: none !important;
 	}
 </style>
