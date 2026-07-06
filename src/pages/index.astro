@@ -8,30 +8,66 @@ const posts = (await getCollection('blog')).sort(
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<Layout title="persistence">
-	<section class="intro">
-		<p>Documenting insights, systems optimization, and core technical mechanics.</p>
+<Layout title="persistence | Personal Site">
+	<!-- About Me Section / Professional Introduction -->
+	<section class="about-me">
+		<h2>About Me</h2>
+		<p>
+			Welcome. I am a systems optimization and data architecture specialist. This blog serves as a chronological, distraction-free register of structural paradigms, notebook conversions, and technical insights.
+		</p>
 	</section>
-	<hr />
-	<ul class="post-list">
-		{posts.map(post => (
-			<li>
-				<span class="date">
-					{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
-				</span>
-				<a href={`${base}/posts/${post.slug}/`}>{post.data.title}</a>
-				{post.data.description && <p class="desc">{post.data.description}</p>}
-			</li>
-		))}
-	</ul>
+
+	<hr class="divider" />
+
+	<!-- Writing Log -->
+	<section class="writings">
+		<h2 class="section-title">Writing</h2>
+		<ul class="post-list">
+			{posts.map(post => (
+				<li>
+					<span class="date">
+						{post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
+					</span>
+					<a class="post-link" href={`${base}/posts/${post.slug}/`}>{post.data.title}</a>
+					{post.data.description && <p class="desc">{post.data.description}</p>}
+				</li>
+			))}
+		</ul>
+	</section>
 </Layout>
 
 <style>
-	hr {
+	.about-me {
+		margin-top: 1rem;
+	}
+	.about-me h2 {
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--accent);
+		margin: 0 0 1rem 0;
+		font-weight: 700;
+	}
+	.about-me p {
+		font-size: 1.2rem;
+		line-height: 1.7;
+		margin: 0;
+	}
+	.divider {
 		border: 0;
 		border-top: 1px solid var(--muted);
-		opacity: 0.2;
-		margin: 2rem 0;
+		opacity: 0.15;
+		margin: 3rem 0;
+	}
+	.section-title {
+		font-family: var(--font-sans);
+		font-size: 0.85rem;
+		text-transform: uppercase;
+		letter-spacing: 0.12em;
+		color: var(--muted);
+		margin: 0 0 2rem 0;
+		font-weight: 700;
 	}
 	.post-list {
 		list-style: none;
@@ -39,23 +75,29 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 		margin: 0;
 	}
 	.post-list li {
-		margin-bottom: 2rem;
+		margin-bottom: 2.5rem;
 	}
 	.date {
 		display: block;
+		font-family: var(--font-sans);
 		font-size: 0.85rem;
 		color: var(--muted);
+		margin-bottom: 0.25rem;
 	}
-	.post-list a {
-		font-size: 1.25rem;
+	.post-link {
+		font-size: 1.4rem;
 		font-weight: 600;
 		text-decoration: none;
+		color: var(--text);
+		transition: color 0.15s ease;
 	}
-	.post-list a:hover {
+	.post-link:hover {
+		color: var(--accent);
 		text-decoration: underline;
 	}
 	.desc {
-		margin: 0.25rem 0 0 0;
+		margin: 0.4rem 0 0 0;
 		color: var(--muted);
+		font-size: 1rem;
 	}
 </style>

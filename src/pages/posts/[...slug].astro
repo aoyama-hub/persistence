@@ -14,9 +14,11 @@ const { Content } = await entry.render();
 ---
 
 <Layout title={`${entry.data.title} | persistence`} description={entry.data.description}>
-	<article>
+	<article class="reading-article">
 		<header class="post-header">
-			<time>{entry.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</time>
+			<time datetime={entry.data.date.toISOString()}>
+				{entry.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+			</time>
 			<h1>{entry.data.title}</h1>
 		</header>
 		<div class="markdown-body">
@@ -26,15 +28,24 @@ const { Content } = await entry.render();
 </Layout>
 
 <style>
+	.reading-article {
+		margin-top: 1.5rem;
+	}
 	.post-header {
-		margin-bottom: 2rem;
+		margin-bottom: 3.5rem;
 	}
 	time {
+		font-family: var(--font-sans);
 		color: var(--muted);
-		font-size: 0.9rem;
+		font-size: 0.85rem;
+		text-transform: uppercase;
+		letter-spacing: 0.08em;
 	}
 	h1 {
-		margin: 0.5rem 0 0 0;
-		font-size: 2.25rem;
+		margin: 0.75rem 0 0 0;
+		font-size: 2.5rem;
+		font-weight: 700;
+		letter-spacing: -0.02em;
+		line-height: 1.2;
 	}
 </style>
