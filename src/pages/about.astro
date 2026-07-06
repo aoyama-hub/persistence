@@ -1,51 +1,82 @@
 ---
 import Layout from '../layouts/Layout.astro';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
 <Layout title="About | persistence" description="Professional portfolio profile and credentials.">
 	<section class="about-view">
-		<header class="about-header">
-			<span>Portfolio Context</span>
-			<h1>About Me</h1>
-		</header>
-		
-		<div class="about-content">
-			<p>
-				Hello! I am a software engineer and researcher focused on structural architecture, optimization mechanics, and clean technical workflows. I build and document systems that balance mathematical performance with extreme ease-of-use.
-			</p>
+		<!-- Left: Text Column -->
+		<div class="about-text-column">
+			<header class="about-header">
+				<span>Portfolio Context</span>
+				<h1>About Me</h1>
+			</header>
 			
-			<p>
-				This digital garden serves as a registry for notebook evaluations and design system implementations, keeping information clean, minimal, and instantly scannable.
-			</p>
+			<div class="about-content">
+				<p>
+					Hello! I am Kazuki Aoyama, a software engineer and researcher focused on structural architecture, optimization mechanics, and clean technical workflows. I build and document systems that balance mathematical performance with extreme ease-of-use.
+				</p>
+				
+				<p>
+					This digital garden serves as a registry for notebook evaluations and design system implementations, keeping information clean, minimal, and instantly scannable.
+				</p>
 
-			<hr class="section-divider" />
+				<hr class="section-divider" />
 
-			<h2 class="sub-heading">Professional Connections</h2>
-			<ul class="connections-list">
-				<li>
-					<strong>GitHub</strong> 
-					<a href="https://github.com/aoyama-hub" target="_blank" rel="noopener noreferrer">@aoyama-hub</a>
-				</li>
-				<li>
-					<strong>LinkedIn</strong> 
-					<a href="#" target="_blank" rel="noopener noreferrer">Kazuki Aoyama</a>
-				</li>
-				<li>
-					<strong>Email Inquiry</strong> 
-					<a href="mailto:contact@domain.com">contact@domain.com</a>
-				</li>
-			</ul>
+				<h2 class="sub-heading">Professional Connections</h2>
+				<ul class="connections-list">
+					<li>
+						<strong>GitHub</strong> 
+						<a href="https://github.com/aoyama-hub" target="_blank" rel="noopener noreferrer">@aoyama-hub</a>
+					</li>
+					<li>
+						<strong>LinkedIn</strong> 
+						<a href="#" target="_blank" rel="noopener noreferrer">Kazuki Aoyama</a>
+					</li>
+					<li>
+						<strong>Email Inquiry</strong> 
+						<a href="mailto:contact@domain.com">contact@domain.com</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+
+		<!-- Right: Image Column -->
+		<div class="about-image-column">
+			<div class="profile-frame">
+				<img 
+					src={`${base}/profile.jpg`} 
+					alt="Kazuki Aoyama" 
+					class="profile-image"
+				/>
+			</div>
 		</div>
 	</section>
 </Layout>
 
 <style>
+	/* Split Grid Alignment */
 	.about-view {
-		max-width: 65ch; /* Comfortable, non-scrolling reading measure */
-		margin: 0 auto;
+		display: grid;
+		grid-template-columns: 1.2fr 0.8fr;
+		gap: 4.5rem;
+		align-items: center;
+		width: 100%;
 	}
+
+	@media (max-width: 768px) {
+		.about-view {
+			grid-template-columns: 1fr;
+			gap: 2.5rem;
+		}
+		.about-image-column {
+			order: -1; /* Pushes the image to the top of the stack on mobile */
+		}
+	}
+
+	/* Text Styling Layout */
 	.about-header {
-		margin-bottom: 2.5rem;
+		margin-bottom: 2rem;
 	}
 	.about-header span {
 		font-family: var(--font-sans);
@@ -70,15 +101,15 @@ import Layout from '../layouts/Layout.astro';
 	.section-divider {
 		border: 0;
 		border-top: 1px solid var(--border);
-		margin: 2.5rem 0;
+		margin: 2rem 0;
 	}
 	.sub-heading {
 		font-family: var(--font-sans);
-		font-size: 1.1rem;
+		font-size: 1rem;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		color: var(--muted);
-		margin-bottom: 1.5rem;
+		margin-bottom: 1.25rem;
 	}
 	.connections-list {
 		list-style: none;
@@ -87,7 +118,7 @@ import Layout from '../layouts/Layout.astro';
 	}
 	.connections-list li {
 		font-family: var(--font-sans);
-		font-size: 1rem;
+		font-size: 0.95rem;
 		margin-bottom: 1rem;
 		display: flex;
 		justify-content: space-between;
@@ -103,5 +134,25 @@ import Layout from '../layouts/Layout.astro';
 	}
 	.connections-list a:hover {
 		text-decoration: underline;
+	}
+
+	/* Image Styling Layout */
+	.profile-frame {
+		border-radius: 16px;
+		border: 1px solid var(--border);
+		box-shadow: 0 12px 36px rgba(23, 40, 36, 0.08);
+		overflow: hidden;
+		width: 100%;
+		aspect-ratio: 4 / 5; /* Beautiful vertical photo ratio */
+		background-color: var(--code-bg);
+	}
+
+	.profile-image {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		margin: 0 !important; /* Overwrite global responsive image spacing margin */
+		border-radius: 0 !important; /* Overwrite global border rules */
+		border: none !important;
 	}
 </style>
